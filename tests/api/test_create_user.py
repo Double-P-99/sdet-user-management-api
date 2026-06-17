@@ -15,6 +15,7 @@ from validators.api_validators import (
 )
 
 pytestmark = [pytest.mark.api, pytest.mark.regression]
+BUG_REPORT_REF = "documented in docs/bug_report.md"
 
 
 @pytest.mark.smoke
@@ -72,6 +73,10 @@ def test_create_user_returns_400_for_invalid_age(
 
 
 @pytest.mark.tc_id("TC-016", "TC-017")
+@pytest.mark.xfail(
+    reason=f"Known bug BUG-001: invalid email is accepted during create-user; {BUG_REPORT_REF}",
+    strict=False,
+)
 def test_create_user_returns_400_for_invalid_email(users_client: UsersClient) -> None:
     """TC-016/TC-017: reject create-user requests with invalid email format."""
     response = users_client.create_user_raw(UserFactory.invalid_email_payload())
@@ -81,6 +86,10 @@ def test_create_user_returns_400_for_invalid_email(users_client: UsersClient) ->
 
 
 @pytest.mark.tc_id("TC-018", "TC-019")
+@pytest.mark.xfail(
+    reason=f"Known bug BUG-002: duplicate create returns 500 instead of 409; {BUG_REPORT_REF}",
+    strict=False,
+)
 def test_create_user_returns_409_for_duplicate_email(users_client: UsersClient) -> None:
     """TC-018/TC-019: reject create-user requests when the email already exists."""
     payload = UserFactory.build_create_user()

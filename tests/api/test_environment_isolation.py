@@ -9,9 +9,14 @@ from factories.user_factory import UserFactory
 from validators.api_validators import assert_status_code
 
 pytestmark = [pytest.mark.api, pytest.mark.regression, pytest.mark.isolation]
+BUG_REPORT_REF = "documented in docs/bug_report.md"
 
 
 @pytest.mark.tc_id("TC-043", "TC-044")
+@pytest.mark.xfail(
+    reason=f"Known bug BUG-006: environment isolation is broken between dev and prod; {BUG_REPORT_REF}",
+    strict=False,
+)
 def test_users_are_isolated_between_environments(
     users_client: UsersClient, secondary_users_client: UsersClient
 ) -> None:

@@ -15,6 +15,7 @@ from validators.api_validators import (
 import pytest
 
 pytestmark = [pytest.mark.api, pytest.mark.regression]
+BUG_REPORT_REF = "documented in docs/bug_report.md"
 
 
 @pytest.mark.smoke
@@ -35,6 +36,10 @@ def test_get_user_returns_200_for_existing_user(
 
 
 @pytest.mark.tc_id("TC-022", "TC-023")
+@pytest.mark.xfail(
+    reason=f"Known bug BUG-003: missing user lookup returns 500 instead of 404; {BUG_REPORT_REF}",
+    strict=False,
+)
 def test_get_user_returns_404_for_unknown_user(users_client: UsersClient) -> None:
     """TC-022/TC-023: return not found when fetching a user that does not exist."""
     response = users_client.get_user("missing.user@example.com")

@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from itertools import count
 from typing import Any
+from uuid import uuid4
 
 from models.user import CreateUserRequest, UpdateUserRequest
-
-_sequence = count(1)
 
 
 @dataclass(frozen=True)
@@ -24,15 +22,20 @@ class UserFactory:
     """Generate deterministic but unique user payloads for test scenarios."""
 
     @staticmethod
+    def _unique_suffix() -> str:
+        """Generate a short unique suffix to avoid collisions across test runs."""
+        return uuid4().hex[:8]
+
+    @staticmethod
     def build_create_user(
         *,
         overrides: UserOverrides | None = None,
     ) -> CreateUserRequest:
-        index = next(_sequence)
+        unique_suffix = UserFactory._unique_suffix()
         resolved = overrides or UserOverrides()
         return CreateUserRequest(
-            name=resolved.name or f"Test User {index}",
-            email=resolved.email or f"test.user.{index}@example.com",
+            name=resolved.name or f"Test User {unique_suffix}",
+            email=resolved.email or f"test.user.{unique_suffix}@example.com",
             age=resolved.age,
         )
 
@@ -41,11 +44,11 @@ class UserFactory:
         *,
         overrides: UserOverrides | None = None,
     ) -> UpdateUserRequest:
-        index = next(_sequence)
+        unique_suffix = UserFactory._unique_suffix()
         resolved = overrides or UserOverrides(age=31)
         return UpdateUserRequest(
-            name=resolved.name or f"Updated User {index}",
-            email=resolved.email or f"updated.user.{index}@example.com",
+            name=resolved.name or f"Updated User {unique_suffix}",
+            email=resolved.email or f"updated.user.{unique_suffix}@example.com",
             age=resolved.age,
         )
 

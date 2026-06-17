@@ -33,3 +33,17 @@ def secondary_settings(settings: Settings) -> Settings:
 def secondary_users_client(secondary_settings: Settings) -> UsersClient:
     """Secondary API client bound to the opposite environment."""
     return UsersClient(secondary_settings)
+
+
+@pytest.fixture(autouse=True)
+def cleanup_test_users(
+    users_client: UsersClient,
+    secondary_users_client: UsersClient,
+) -> None:
+    """Delete users created during each test so environments stay reusable."""
+    yield
+
+    for client in (users_client, secondary_users_client):
+        for email in reversed(client.tracked_user_emails()):
+            client.delete_user(email)
+        client.reset_tracked_users()

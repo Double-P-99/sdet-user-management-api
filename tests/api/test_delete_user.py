@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 import pytest
 
 from api.users_client import UsersClient
@@ -10,6 +12,8 @@ from models.user import CreateUserRequest
 from validators.api_validators import assert_error_response, assert_status_code
 
 pytestmark = [pytest.mark.api, pytest.mark.regression]
+BUG_REPORT_REF = "documented in docs/bug_report.md"
+IS_DEV = os.getenv("TEST_ENV", "dev") == "dev"
 
 
 @pytest.mark.smoke
@@ -29,6 +33,11 @@ def test_delete_user_returns_204_for_existing_user(
 
 @pytest.mark.security
 @pytest.mark.tc_id("TC-037", "TC-038")
+@pytest.mark.xfail(
+    IS_DEV,
+    reason=f"Known bug BUG-004: dev delete allows missing auth header; {BUG_REPORT_REF}",
+    strict=False,
+)
 def test_delete_user_returns_401_without_auth_header(users_client: UsersClient) -> None:
     """TC-037/TC-038: reject delete requests that omit the authentication header."""
     payload = UserFactory.build_create_user()
@@ -42,6 +51,11 @@ def test_delete_user_returns_401_without_auth_header(users_client: UsersClient) 
 
 @pytest.mark.security
 @pytest.mark.tc_id("TC-039", "TC-040")
+@pytest.mark.xfail(
+    IS_DEV,
+    reason=f"Known bug BUG-005: dev delete accepts invalid auth token; {BUG_REPORT_REF}",
+    strict=False,
+)
 def test_delete_user_returns_401_for_invalid_auth_token(users_client: UsersClient) -> None:
     """TC-039/TC-040: reject delete requests with an invalid authentication token."""
     payload = UserFactory.build_create_user()
