@@ -14,10 +14,15 @@ from validators.api_validators import (
     assert_user_shape,
 )
 
+pytestmark = [pytest.mark.api, pytest.mark.regression]
 
+
+@pytest.mark.smoke
+@pytest.mark.tc_id("TC-007", "TC-008")
 def test_create_user_returns_201_and_created_user(
     users_client: UsersClient, create_user_payload: CreateUserRequest
 ) -> None:
+    """TC-007/TC-008: create a user with a valid payload and validate the success response."""
     response = users_client.create_user(create_user_payload)
 
     assert_status_code(response, 201)
@@ -27,34 +32,57 @@ def test_create_user_returns_201_and_created_user(
     assert body == create_user_payload.to_dict()
 
 
-@pytest.mark.parametrize("missing_field", ["name", "email", "age"])
+@pytest.mark.tc_id("TC-009", "TC-010", "TC-011")
+@pytest.mark.parametrize(
+    ("missing_field", "tc_id"),
+    [
+        pytest.param("name", "TC-009", id="TC-009"),
+        pytest.param("email", "TC-010", id="TC-010"),
+        pytest.param("age", "TC-011", id="TC-011"),
+    ],
+)
 def test_create_user_returns_400_for_missing_required_fields(
-    users_client: UsersClient, missing_field: str
+    users_client: UsersClient, missing_field: str, tc_id: str
 ) -> None:
+    """TC-009/TC-010/TC-011: reject create-user requests missing required fields."""
     response = users_client.create_user_raw(UserFactory.missing_field_payload(missing_field))
 
     assert_status_code(response, 400)
     assert_error_response(response)
 
 
-@pytest.mark.parametrize("age", [0, 151, -1, "thirty"])
+@pytest.mark.tc_id("TC-012", "TC-013", "TC-014", "TC-015")
+@pytest.mark.parametrize(
+    ("age", "tc_id"),
+    [
+        pytest.param(0, "TC-012", id="TC-012"),
+        pytest.param(-1, "TC-013", id="TC-013"),
+        pytest.param(151, "TC-014", id="TC-014"),
+        pytest.param("thirty", "TC-015", id="TC-015"),
+    ],
+)
 def test_create_user_returns_400_for_invalid_age(
-    users_client: UsersClient, age: object
+    users_client: UsersClient, age: object, tc_id: str
 ) -> None:
+    """TC-012/TC-013/TC-014/TC-015: reject create-user requests with invalid age values."""
     response = users_client.create_user_raw(UserFactory.invalid_age_payload(age))
 
     assert_status_code(response, 400)
     assert_error_response(response)
 
 
+@pytest.mark.tc_id("TC-016", "TC-017")
 def test_create_user_returns_400_for_invalid_email(users_client: UsersClient) -> None:
+    """TC-016/TC-017: reject create-user requests with invalid email format."""
     response = users_client.create_user_raw(UserFactory.invalid_email_payload())
 
     assert_status_code(response, 400)
     assert_error_response(response)
 
 
+@pytest.mark.tc_id("TC-018", "TC-019")
 def test_create_user_returns_409_for_duplicate_email(users_client: UsersClient) -> None:
+    """TC-018/TC-019: reject create-user requests when the email already exists."""
     payload = UserFactory.build_create_user()
 
     first_response = users_client.create_user(payload)

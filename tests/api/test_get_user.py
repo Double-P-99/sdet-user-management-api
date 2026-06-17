@@ -12,10 +12,17 @@ from validators.api_validators import (
     assert_user_shape,
 )
 
+import pytest
 
+pytestmark = [pytest.mark.api, pytest.mark.regression]
+
+
+@pytest.mark.smoke
+@pytest.mark.tc_id("TC-020", "TC-021")
 def test_get_user_returns_200_for_existing_user(
     users_client: UsersClient, create_user_payload: CreateUserRequest
 ) -> None:
+    """TC-020/TC-021: fetch an existing user by email and validate the success schema."""
     create_response = users_client.create_user(create_user_payload)
     get_response = users_client.get_user(create_user_payload.email)
 
@@ -27,7 +34,9 @@ def test_get_user_returns_200_for_existing_user(
     assert body == create_user_payload.to_dict()
 
 
+@pytest.mark.tc_id("TC-022", "TC-023")
 def test_get_user_returns_404_for_unknown_user(users_client: UsersClient) -> None:
+    """TC-022/TC-023: return not found when fetching a user that does not exist."""
     response = users_client.get_user("missing.user@example.com")
 
     assert_status_code(response, 404)

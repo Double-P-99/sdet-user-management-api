@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from api.users_client import UsersClient
 from models.user import CreateUserRequest
 from validators.api_validators import (
@@ -10,8 +12,13 @@ from validators.api_validators import (
     assert_user_shape,
 )
 
+pytestmark = [pytest.mark.api, pytest.mark.regression]
 
+
+@pytest.mark.smoke
+@pytest.mark.tc_id("TC-001", "TC-002")
 def test_list_users_returns_200_and_json_array(users_client: UsersClient) -> None:
+    """TC-001/TC-002: list users and validate the collection response shape."""
     response = users_client.list_users()
 
     assert_status_code(response, 200)
@@ -20,9 +27,11 @@ def test_list_users_returns_200_and_json_array(users_client: UsersClient) -> Non
     assert isinstance(body, list), f"Expected list body, got {type(body).__name__}"
 
 
+@pytest.mark.tc_id("TC-003", "TC-004", "TC-005", "TC-006")
 def test_list_users_includes_created_user(
     users_client: UsersClient, create_user_payload: CreateUserRequest
 ) -> None:
+    """TC-003/TC-004/TC-005/TC-006: created users appear in the collection and every item matches the User schema."""
     create_response = users_client.create_user(create_user_payload)
     list_response = users_client.list_users()
 
