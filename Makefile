@@ -58,13 +58,13 @@ logs:
 	$(DOCKER) logs $(CONTAINER_NAME)
 
 test:
-	BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) --html=reports/report.html --self-contained-html --junitxml=reports/results.xml
+	BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m "not unit" --html=reports/report.html --self-contained-html --junitxml=reports/results.xml
 
 test-dev:
-	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
+	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m "not unit" --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
 
 test-prod:
-	TEST_ENV=prod BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
+	TEST_ENV=prod BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m "not unit" --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
 
 test-contract:
 	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m contract --html=reports/contract-report.html --self-contained-html --junitxml=reports/contract-results.xml

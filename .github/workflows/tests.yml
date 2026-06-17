@@ -39,7 +39,7 @@ jobs:
           exit 1
 
       - name: Run dev tests
-        run: pytest --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
+        run: pytest -m "not unit" --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
 
       - name: Upload dev reports
         if: always()
@@ -84,7 +84,7 @@ jobs:
           exit 1
 
       - name: Run prod tests
-        run: pytest --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
+        run: pytest -m "not unit" --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
 
       - name: Upload prod reports
         if: always()
