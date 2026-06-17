@@ -1,0 +1,92 @@
+name: API Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  e2e-dev:
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: http://localhost:3000
+      TEST_ENV: dev
+      AUTH_TOKEN: mysecrettoken
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Start API container
+        run: docker run -d --name user-api -p 3000:3000 ghcr.io/danielsilva-loanpro/sdet-interview-challenge:latest
+
+      - name: Wait for API
+        shell: bash
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:3000/dev/users > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs user-api
+          exit 1
+
+      - name: Run dev tests
+        run: pytest --html=reports/dev-report.html --self-contained-html
+
+      - name: Upload dev report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-report
+          path: reports/dev-report.html
+
+  e2e-prod:
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: http://localhost:3000
+      TEST_ENV: prod
+      AUTH_TOKEN: mysecrettoken
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Start API container
+        run: docker run -d --name user-api -p 3000:3000 ghcr.io/danielsilva-loanpro/sdet-interview-challenge:latest
+
+      - name: Wait for API
+        shell: bash
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:3000/prod/users > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs user-api
+          exit 1
+
+      - name: Run prod tests
+        run: pytest --html=reports/prod-report.html --self-contained-html
+
+      - name: Upload prod report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-report
+          path: reports/prod-report.html
