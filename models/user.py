@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field
 
 
 class BaseUserPayload(BaseModel):
     """Shared schema constraints defined by the OpenAPI specification."""
-
-    model_config = ConfigDict(extra="forbid")
-
     name: str
     email: EmailStr
     age: int = Field(ge=1, le=150)
@@ -33,7 +30,4 @@ class UpdateUserRequest(BaseUserPayload):
 
 class ErrorResponse(BaseModel):
     """Schema for error responses returned by the API."""
-
-    model_config = ConfigDict(extra="forbid")
-
     error: str
