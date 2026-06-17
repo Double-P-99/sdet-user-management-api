@@ -32,7 +32,7 @@ The framework reads these environment variables:
 - `AUTH_TOKEN`
 - `REQUEST_TIMEOUT`
 
-See [`.env.example`](/abs/c:/Users/Josea/Documents/GitHub/sdet-user-management-api/.env.example) for the default local values.
+See [`.env.example`](./.env.example) for the default local values.
 
 ## Quick Start
 
@@ -113,4 +113,4 @@ Use the HTML files for detailed human-readable debugging. Use the JUnit XML file
 - The Makefile is most convenient in WSL, Git Bash, or any Unix-like shell with `make`.
 - PowerShell users can run the same workflow manually with `.venv\Scripts\python.exe`.
 - Docker must be running before executing the tests locally.
-- Additional execution details are documented in [RUNNING_TESTS.md](/abs/c:/Users/Josea/Documents/GitHub/sdet-user-management-api/docs/RUNNING_TESTS.md).
+- Additional execution details are documented in [RUNNING_TESTS.md](./docs/RUNNING_TESTS.md).

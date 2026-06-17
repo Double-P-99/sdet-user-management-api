@@ -32,7 +32,7 @@ The API accepts a payload with an invalid email and creates the user successfull
 
 **Automated evidence**
 - `tests/api/test_create_user.py::test_create_user_returns_400_for_invalid_email`
-- `tests/contract/test_error_responses.py::test_error_responses_follow_contract[create user validation error-<lambda>-tc_ids0]`
+- `tests/contract/test_error_responses.py::test_error_responses_follow_contract[create-user-validation-error]`
 - Reflected in:
   - `reports/dev-results.xml`
   - `reports/prod-results.xml`
@@ -68,7 +68,7 @@ Creating a user twice with the same email does not return the documented conflic
 
 **Automated evidence**
 - `tests/api/test_create_user.py::test_create_user_returns_409_for_duplicate_email`
-- `tests/contract/test_error_responses.py::test_error_responses_follow_contract[create user duplicate email-<lambda>-tc_ids1]`
+- `tests/contract/test_error_responses.py::test_error_responses_follow_contract[create-user-duplicate-email]`
 - Reflected in:
   - `reports/dev-results.xml`
   - `reports/prod-results.xml`
@@ -104,7 +104,7 @@ Fetching a user that does not exist should produce a not-found response, but the
 
 **Automated evidence**
 - `tests/api/test_get_user.py::test_get_user_returns_404_for_unknown_user`
-- `tests/contract/test_error_responses.py::test_error_responses_follow_contract[get missing user-<lambda>-tc_ids2]`
+- `tests/contract/test_error_responses.py::test_error_responses_follow_contract[get-missing-user]`
 - Reflected in:
   - `reports/dev-results.xml`
   - `reports/prod-results.xml`
@@ -138,7 +138,7 @@ The `dev` environment allows a delete request to succeed even when the required 
 
 **Automated evidence**
 - `tests/api/test_delete_user.py::test_delete_user_returns_401_without_auth_header`
-- `tests/contract/test_error_responses.py::test_error_responses_follow_contract[delete unauthorized-<lambda>-tc_ids5]`
+- `tests/contract/test_error_responses.py::test_error_responses_follow_contract[delete-unauthorized]`
 - Reflected in:
   - `reports/dev-results.xml`
 
@@ -215,44 +215,8 @@ Data created in one environment should remain isolated from the other, but the e
 - Confidence in CI stages running independently
 - Reliability of any environment-specific test data
 
-## BUG-007: `GET /users` returns data that violates the documented `User` schema
-
-**Summary**  
-The users collection endpoint returns at least one record that does not satisfy the documented response schema.
-
-**Specification expectation**
-- Endpoint: `GET /{env}/users`
-- Expected status: `200`
-- Expected body: array of `User`
-- Contract reference: `User.email` must satisfy `format: email`
-
-**Actual behavior**
-- The response body includes invalid persisted data such as `email: "invalid-email"`
-- Schema validation fails when the test checks each item against the `User` model
-
-**Affected environments**
-- `dev`
-- `prod`
-
-**Test cases that exposed it**
-- `TC-003`: created user appears in list in `dev`
-- `TC-004`: created user appears in list in `prod`
-- `TC-005`: every list item matches `User` schema in `dev`
-- `TC-006`: every list item matches `User` schema in `prod`
-
-**Automated evidence**
-- `tests/api/test_list_users.py::test_list_users_includes_created_user`
-- Reflected in:
-  - `reports/dev-results.xml`
-  - `reports/prod-results.xml`
-
-**Scenarios affected**
-- Response-schema compliance for collection endpoints
-- Data quality in persisted records
-- Consumer trust in `GET /users` responses
-
 ## Notes
 
 - The OpenAPI file was treated as the authoritative source for expected status codes, schemas, required authentication behavior, and environment usage.
 - I intentionally did not report "extra fields accepted" as a bug because the schema does not explicitly define `additionalProperties: false`.
-- BUG-007 is likely a downstream consequence of BUG-001, but it is still documented separately because it represents an independent contract violation in the collection response.
+- During earlier runs, `GET /users` exposed invalid persisted records and looked like a separate response-schema bug. After adding unique test data and automatic cleanup, that behavior is no longer treated as a confirmed application bug and is considered historical test-environment contamination instead.

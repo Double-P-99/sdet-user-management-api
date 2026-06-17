@@ -48,18 +48,18 @@ This matrix maps the OpenAPI specification to the automated scenarios implemente
 | TC-042 | `/users/{email}` | `DELETE` | Delete nonexistent user in `prod` | `prod` | Medium | `404` with `ErrorResponse` | `test_delete_user_returns_404_for_unknown_user` |
 | TC-043 | `/dev` and `/prod` | Cross-environment | User created in `dev` should not exist in `prod` | Cross-environment | High | Secondary environment returns `404` | `test_users_are_isolated_between_environments` |
 | TC-044 | `/dev` and `/prod` | Cross-environment | User created in `prod` should not exist in `dev` | Cross-environment | High | Secondary environment returns `404` | `test_users_are_isolated_between_environments` |
-| TC-045 | Error contract | `POST /users` | Error schema for validation failures in `dev` | `dev` | High | `400` with `{ "error": "..." }` | `test_error_responses_follow_contract[create user validation error-<lambda>]` |
-| TC-046 | Error contract | `POST /users` | Error schema for validation failures in `prod` | `prod` | High | `400` with `{ "error": "..." }` | `test_error_responses_follow_contract[create user validation error-<lambda>]` |
-| TC-047 | Error contract | `POST /users` | Error schema for duplicate email in `dev` | `dev` | High | `409` with `{ "error": "..." }` | `test_error_responses_follow_contract[create user duplicate email-<lambda>]` |
-| TC-048 | Error contract | `POST /users` | Error schema for duplicate email in `prod` | `prod` | High | `409` with `{ "error": "..." }` | `test_error_responses_follow_contract[create user duplicate email-<lambda>]` |
-| TC-049 | Error contract | `GET /users/{email}` | Error schema for missing user in `dev` | `dev` | High | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[get missing user-<lambda>]` |
-| TC-050 | Error contract | `GET /users/{email}` | Error schema for missing user in `prod` | `prod` | High | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[get missing user-<lambda>]` |
-| TC-051 | Error contract | `PUT /users/{email}` | Error schema for updating missing user in `dev` | `dev` | Medium | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[update missing user-<lambda>]` |
-| TC-052 | Error contract | `PUT /users/{email}` | Error schema for updating missing user in `prod` | `prod` | Medium | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[update missing user-<lambda>]` |
-| TC-053 | Error contract | `DELETE /users/{email}` | Error schema for deleting missing user in `dev` | `dev` | Medium | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[delete missing user-<lambda>]` |
-| TC-054 | Error contract | `DELETE /users/{email}` | Error schema for deleting missing user in `prod` | `prod` | Medium | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[delete missing user-<lambda>]` |
-| TC-055 | Error contract | `DELETE /users/{email}` | Error schema for unauthorized delete in `dev` | `dev` | High | `401` with `{ "error": "..." }` | `test_error_responses_follow_contract[delete unauthorized-<lambda>]` |
-| TC-056 | Error contract | `DELETE /users/{email}` | Error schema for unauthorized delete in `prod` | `prod` | High | `401` with `{ "error": "..." }` | `test_error_responses_follow_contract[delete unauthorized-<lambda>]` |
+| TC-045 | Error contract | `POST /users` | Error schema for validation failures in `dev` | `dev` | High | `400` with `{ "error": "..." }` | `test_error_responses_follow_contract[create-user-validation-error]` |
+| TC-046 | Error contract | `POST /users` | Error schema for validation failures in `prod` | `prod` | High | `400` with `{ "error": "..." }` | `test_error_responses_follow_contract[create-user-validation-error]` |
+| TC-047 | Error contract | `POST /users` | Error schema for duplicate email in `dev` | `dev` | High | `409` with `{ "error": "..." }` | `test_error_responses_follow_contract[create-user-duplicate-email]` |
+| TC-048 | Error contract | `POST /users` | Error schema for duplicate email in `prod` | `prod` | High | `409` with `{ "error": "..." }` | `test_error_responses_follow_contract[create-user-duplicate-email]` |
+| TC-049 | Error contract | `GET /users/{email}` | Error schema for missing user in `dev` | `dev` | High | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[get-missing-user]` |
+| TC-050 | Error contract | `GET /users/{email}` | Error schema for missing user in `prod` | `prod` | High | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[get-missing-user]` |
+| TC-051 | Error contract | `PUT /users/{email}` | Error schema for updating missing user in `dev` | `dev` | Medium | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[update missing user-_update_missing_user_response-tc_ids3]` |
+| TC-052 | Error contract | `PUT /users/{email}` | Error schema for updating missing user in `prod` | `prod` | Medium | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[update missing user-_update_missing_user_response-tc_ids3]` |
+| TC-053 | Error contract | `DELETE /users/{email}` | Error schema for deleting missing user in `dev` | `dev` | Medium | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[delete missing user-_delete_missing_user_response-tc_ids4]` |
+| TC-054 | Error contract | `DELETE /users/{email}` | Error schema for deleting missing user in `prod` | `prod` | Medium | `404` with `{ "error": "..." }` | `test_error_responses_follow_contract[delete missing user-_delete_missing_user_response-tc_ids4]` |
+| TC-055 | Error contract | `DELETE /users/{email}` | Error schema for unauthorized delete in `dev` | `dev` | High | `401` with `{ "error": "..." }` | `test_error_responses_follow_contract[delete-unauthorized]` |
+| TC-056 | Error contract | `DELETE /users/{email}` | Error schema for unauthorized delete in `prod` | `prod` | High | `401` with `{ "error": "..." }` | `test_error_responses_follow_contract[delete-unauthorized]` |
 
 ## Notes
 
@@ -75,5 +75,5 @@ This matrix maps the OpenAPI specification to the automated scenarios implemente
 - Add stronger bidirectional isolation checks with setup and verification starting from both `dev` and `prod`.
 - Add tests for response schema drift on successful `POST`, `GET`, `PUT`, and collection `GET` responses beyond the current core field validation.
 - Add auth-header robustness tests, such as whitespace-only tokens, missing header casing variants, and unexpected auth header values on unprotected endpoints.
-- Add cleanup or data-reset strategies to reduce test coupling when environments preserve data across multiple runs.
+- Extend cleanup protections with optional environment-reset hooks if the service ever exposes administrative teardown endpoints.
 - Add workflow-level publishing of JUnit XML into the GitHub Actions test summary for easier inspection directly in CI.
