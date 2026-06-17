@@ -71,6 +71,7 @@ This matrix maps the OpenAPI specification to the automated scenarios implemente
 
 - Add explicit malformed JSON body tests for `POST /users` and `PUT /users/{email}` to validate parser-level error handling.
 - Add path-encoding edge cases for `GET`, `PUT`, and `DELETE` using emails with `+`, uppercase characters, or percent-encoded values.
+- Add exploratory negative cases for invalid email format in the path parameter of `GET`, `PUT`, and `DELETE`. The OpenAPI spec constrains the path as `format: email`, but it does not define the expected error status for malformed path values, so these are better treated as exploratory coverage than hard contract assertions.
 - Add repeated-delete coverage to verify whether deleting the same user twice should consistently transition from `204` to `404`.
 - Add stronger bidirectional isolation checks with setup and verification starting from both `dev` and `prod`.
 - Add tests for response schema drift on successful `POST`, `GET`, `PUT`, and collection `GET` responses beyond the current core field validation.
