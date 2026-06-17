@@ -14,7 +14,7 @@ BASE_URL ?= http://localhost:3000
 AUTH_TOKEN ?= mysecrettoken
 REQUEST_TIMEOUT ?= 10
 
-.PHONY: help setup install env up down restart logs test test-dev test-prod test-contract
+.PHONY: help setup install env up down restart logs test test-dev test-prod test-contract test-unit
 
 help:
 	@echo "Available targets:"
@@ -30,6 +30,7 @@ help:
 	@echo "  make test-prod     Run tests against the prod environment"
 	@echo "  make test          Run tests against the current TEST_ENV or default dev"
 	@echo "  make test-contract Run contract-only tests"
+	@echo "  make test-unit     Run framework unit tests without the API container"
 
 setup: venv install env
 
@@ -67,3 +68,6 @@ test-prod:
 
 test-contract:
 	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m contract --html=reports/contract-report.html --self-contained-html --junitxml=reports/contract-results.xml
+
+test-unit:
+	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m unit
