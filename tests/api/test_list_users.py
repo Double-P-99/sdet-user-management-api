@@ -13,7 +13,6 @@ from validators.api_validators import (
 )
 
 pytestmark = [pytest.mark.api, pytest.mark.regression]
-BUG_REPORT_REF = "documented in docs/bug_report.md"
 
 
 @pytest.mark.smoke
@@ -29,10 +28,6 @@ def test_list_users_returns_200_and_json_array(users_client: UsersClient) -> Non
 
 
 @pytest.mark.tc_id("TC-003", "TC-004", "TC-005", "TC-006")
-@pytest.mark.xfail(
-    reason=f"Known bug BUG-007: list-users returns records that violate the User schema; {BUG_REPORT_REF}",
-    strict=False,
-)
 def test_list_users_includes_created_user(
     users_client: UsersClient, create_user_payload: CreateUserRequest
 ) -> None:
