@@ -83,21 +83,21 @@ docker run -d --name sdet-user-api -p 3000:3000 ghcr.io/danielsilva-loanpro/sdet
 
 ```powershell
 $env:TEST_ENV="dev"
-.venv\Scripts\python.exe -m pytest --html=reports/dev-report.html --self-contained-html
+.venv\Scripts\python.exe -m pytest --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
 ```
 
 ### 5. Run tests against `prod`
 
 ```powershell
 $env:TEST_ENV="prod"
-.venv\Scripts\python.exe -m pytest --html=reports/prod-report.html --self-contained-html
+.venv\Scripts\python.exe -m pytest --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
 ```
 
 ### 6. Run contract-only tests
 
 ```powershell
 $env:TEST_ENV="dev"
-.venv\Scripts\python.exe -m pytest -m contract --html=reports/contract-report.html --self-contained-html
+.venv\Scripts\python.exe -m pytest -m contract --html=reports/contract-report.html --self-contained-html --junitxml=reports/contract-results.xml
 ```
 
 ### 7. Stop the container
@@ -117,18 +117,43 @@ python -m venv .venv
 cp -n .env.example .env
 docker rm -f sdet-user-api || true
 docker run -d --name sdet-user-api -p 3000:3000 ghcr.io/danielsilva-loanpro/sdet-interview-challenge:latest
-TEST_ENV=dev .venv/bin/python -m pytest --html=reports/dev-report.html --self-contained-html
-TEST_ENV=prod .venv/bin/python -m pytest --html=reports/prod-report.html --self-contained-html
+TEST_ENV=dev .venv/bin/python -m pytest --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
+TEST_ENV=prod .venv/bin/python -m pytest --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
 docker rm -f sdet-user-api
 ```
 
 ## Reports
 
-Successful runs generate HTML artifacts in `reports/`, such as:
+Successful runs generate both HTML and JUnit XML artifacts in `reports/`, such as:
 
 - `reports/dev-report.html`
 - `reports/prod-report.html`
 - `reports/contract-report.html`
+- `reports/dev-results.xml`
+- `reports/prod-results.xml`
+- `reports/contract-results.xml`
+
+## Report Types
+
+### HTML Report
+
+Generated automatically on each run, for example:
+
+```bash
+pytest --html=reports/report.html --self-contained-html
+```
+
+Open the file in a browser to inspect pass/fail status, traceback output, and the attached HTTP history for failed tests.
+
+### JUnit XML
+
+Generated alongside the HTML report, for example:
+
+```bash
+pytest --junitxml=reports/results.xml
+```
+
+JUnit XML is designed for CI/CD systems. GitHub Actions and other test tooling can parse it directly to display a native summary in the workflow UI without downloading an artifact.
 
 ## Troubleshooting
 

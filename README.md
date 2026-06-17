@@ -98,6 +98,15 @@ HTML reports are written to `reports/`:
 - `reports/contract-report.html`
 - `reports/report.html`
 
+JUnit XML reports are also generated:
+
+- `reports/dev-results.xml`
+- `reports/prod-results.xml`
+- `reports/contract-results.xml`
+- `reports/results.xml`
+
+Use the HTML files for detailed human-readable debugging. Use the JUnit XML files for CI/CD integrations and workflow-native summaries.
+
 ## Notes
 
 - `make setup` creates `.venv`, installs dependencies there, and creates `.env` if needed.

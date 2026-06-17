@@ -39,14 +39,16 @@ jobs:
           exit 1
 
       - name: Run dev tests
-        run: pytest --html=reports/dev-report.html --self-contained-html
+        run: pytest --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
 
-      - name: Upload dev report
+      - name: Upload dev reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dev-report
-          path: reports/dev-report.html
+          name: dev-reports
+          path: |
+            reports/dev-report.html
+            reports/dev-results.xml
 
   e2e-prod:
     runs-on: ubuntu-latest
@@ -82,11 +84,13 @@ jobs:
           exit 1
 
       - name: Run prod tests
-        run: pytest --html=reports/prod-report.html --self-contained-html
+        run: pytest --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
 
-      - name: Upload prod report
+      - name: Upload prod reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: prod-report
-          path: reports/prod-report.html
+          name: prod-reports
+          path: |
+            reports/prod-report.html
+            reports/prod-results.xml
