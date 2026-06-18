@@ -48,32 +48,41 @@ def main() -> int:
         suite = _find_suite(root)
 
         tests = int(suite.attrib.get("tests", 0)) if suite is not None else 0
-        failures = int(suite.attrib.get("failures", 0)) if suite is not None else 0
-        errors = int(suite.attrib.get("errors", 0)) if suite is not None else 0
-        skipped = int(suite.attrib.get("skipped", 0)) if suite is not None else 0
-        passed = tests - failures - errors - skipped
-
         failing_cases: list[str] = []
         skipped_cases: list[str] = []
         xfailed_cases: list[str] = []
+        error_count = 0
+        failure_count = 0
         for case in root.iter("testcase"):
-            if case.find("failure") is not None or case.find("error") is not None:
+            if case.find("failure") is not None:
                 failing_cases.append(_case_name(case))
+                failure_count += 1
                 continue
 
-            skipped = case.find("skipped")
-            if skipped is None:
+            if case.find("error") is not None:
+                failing_cases.append(_case_name(case))
+                error_count += 1
                 continue
 
-            skipped_type = (skipped.attrib.get("type") or "").strip().lower()
+            skipped_node = case.find("skipped")
+            if skipped_node is None:
+                continue
+
+            skipped_type = (skipped_node.attrib.get("type") or "").strip().lower()
             if skipped_type == "pytest.xfail":
                 xfailed_cases.append(_case_name(case))
             else:
                 skipped_cases.append(_case_name(case))
 
-        summary.write("| Passed | Failed | Errors | Skipped |\n")
-        summary.write("| --- | --- | --- | --- |\n")
-        summary.write(f"| {passed} | {failures} | {errors} | {skipped} |\n\n")
+        xfailed_count = len(xfailed_cases)
+        skipped_count = len(skipped_cases)
+        passed = tests - failure_count - error_count - xfailed_count - skipped_count
+
+        summary.write("| Passed | Failed | Errors | Xfailed | Skipped |\n")
+        summary.write("| --- | --- | --- | --- | --- |\n")
+        summary.write(
+            f"| {passed} | {failure_count} | {error_count} | {xfailed_count} | {skipped_count} |\n\n"
+        )
 
         if failing_cases:
             summary.write("### Failed cases\n\n")
