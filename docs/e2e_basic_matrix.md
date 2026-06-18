@@ -14,6 +14,9 @@ The goal here is not to restate every contract permutation, but to protect the m
 | E2E-006 | Create and delete with valid auth | `dev`, `prod` | `DELETE` returns `204` | `test_delete_user_returns_204_for_existing_user` | Marked with `@pytest.mark.e2e_id("E2E-006")` |
 | E2E-007 | Create, delete, then update | `dev`, `prod` | update after delete returns `404` | `test_update_user_returns_404_after_user_was_deleted` | Marked with `@pytest.mark.e2e_id("E2E-007")` |
 | E2E-008 | Create in one environment and verify isolation from the other | Cross-environment | secondary environment does not expose the user | `test_users_are_isolated_between_environments` | Marked with `@pytest.mark.e2e_id("E2E-008")` |
+| E2E-009 | Create, delete, then fetch | `dev`, `prod` | `GET /users/{email}` returns `404` after a successful delete | `test_deleted_user_is_no_longer_readable` | Marked with `@pytest.mark.e2e_id("E2E-009")`; currently exposed through `BUG-003` |
+| E2E-010 | Create, then compare `GET /users/{email}` with `GET /users` entry | `dev`, `prod` | single-resource and collection views return the same user data | `test_get_user_and_list_user_entry_match_after_create` | Marked with `@pytest.mark.e2e_id("E2E-010")` |
+| E2E-011 | Create, update, update again, then fetch | `dev`, `prod` | latest successful update defines the final readable state | `test_latest_update_state_wins_after_multiple_updates` | Marked with `@pytest.mark.e2e_id("E2E-011")`; currently exposes `BUG-006` |
 
 ## Why This Matrix Exists
 
@@ -26,3 +29,10 @@ The goal here is not to restate every contract permutation, but to protect the m
 - Keep this matrix small and workflow-oriented.
 - Add a new row only when the scenario represents a real user journey or a read-after-write consistency check.
 - Do not move framework-only tests here. Internal cleanup or client-tracking behavior belongs in unit tests, not in the basic E2E matrix.
+
+## Additional E2E Coverage With More Time
+
+- Add repeated-delete coverage such as `create -> delete -> delete` to validate the transition from success to not-found.
+- Add special-email flows using addresses with `+`, uppercase characters, and other valid variants to verify path handling and persistence consistency.
+- Add dual-environment mirrored workflows that create and mutate similar users in `dev` and `prod` during the same run to strengthen isolation confidence.
+- Add cross-endpoint consistency flows after `update` and `delete`, not only after `create`.

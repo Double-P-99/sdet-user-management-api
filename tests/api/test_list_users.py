@@ -44,3 +44,30 @@ def test_list_users_includes_created_user(
     assert any(user.get("email") == create_user_payload.email for user in users)
     for user in users:
         assert_user_shape(user)
+
+
+@pytest.mark.e2e_id("E2E-010")
+def test_get_user_and_list_user_entry_match_after_create(
+    users_client: UsersClient, create_user_payload: CreateUserRequest
+) -> None:
+    """The single-user view and collection view should agree after creation."""
+    create_response = users_client.create_user(create_user_payload)
+    get_response = users_client.get_user(create_user_payload.email)
+    list_response = users_client.list_users()
+
+    assert_status_code(create_response, 201)
+    assert_status_code(get_response, 200)
+    assert_status_code(list_response, 200)
+    assert_json_content_type(get_response)
+    assert_json_content_type(list_response)
+
+    get_body = get_response.json()
+    users = list_response.json()
+    matching_users = [user for user in users if user.get("email") == create_user_payload.email]
+
+    assert len(matching_users) == 1, (
+        f"Expected one user with email {create_user_payload.email}, got {len(matching_users)}"
+    )
+    assert_user_shape(get_body)
+    assert_user_shape(matching_users[0])
+    assert get_body == matching_users[0] == create_user_payload.to_dict()

@@ -170,6 +170,49 @@ def test_update_user_returns_404_after_user_was_deleted(
     assert_error_response(update_response)
 
 
+@pytest.mark.e2e_id("E2E-011")
+@pytest.mark.xfail(
+    reason=f"Known bug BUG-006: successful update responses do not persist user changes reliably; {BUG_REPORT_REF}",
+    strict=False,
+)
+def test_latest_update_state_wins_after_multiple_updates(
+    users_client: UsersClient, create_user_payload: CreateUserRequest
+) -> None:
+    """A second successful update should define the final readable user state."""
+    first_update_payload = UserFactory.build_update_user(
+        overrides=UserOverrides(
+            email=create_user_payload.email,
+            name=f"{create_user_payload.name} First Update",
+            age=create_user_payload.age + 1,
+        )
+    )
+    second_update_payload = UserFactory.build_update_user(
+        overrides=UserOverrides(
+            email=create_user_payload.email,
+            name=f"{create_user_payload.name} Second Update",
+            age=create_user_payload.age + 2,
+        )
+    )
+
+    create_response = users_client.create_user(create_user_payload)
+    first_update_response = users_client.update_user(
+        create_user_payload.email, first_update_payload
+    )
+    second_update_response = users_client.update_user(
+        create_user_payload.email, second_update_payload
+    )
+    get_response = users_client.get_user(create_user_payload.email)
+
+    assert_status_code(create_response, 201)
+    assert_status_code(first_update_response, 200)
+    assert_status_code(second_update_response, 200)
+    assert_status_code(get_response, 200)
+    assert_json_content_type(get_response)
+    body = get_response.json()
+    assert_user_shape(body)
+    assert body == second_update_payload.to_dict()
+
+
 @pytest.mark.tc_id("TC-033", "TC-034")
 def test_update_user_returns_409_for_duplicate_email(users_client: UsersClient) -> None:
     """TC-033/TC-034: reject updates that attempt to reuse another user's email."""

@@ -75,3 +75,22 @@ def test_delete_user_returns_404_for_unknown_user(users_client: UsersClient) -> 
 
     assert_status_code(response, 404)
     assert_error_response(response)
+
+
+@pytest.mark.e2e_id("E2E-009")
+@pytest.mark.xfail(
+    reason=f"Known bug BUG-003: missing user lookup returns 500 instead of 404; {BUG_REPORT_REF}",
+    strict=False,
+)
+def test_deleted_user_is_no_longer_readable(
+    users_client: UsersClient, create_user_payload: CreateUserRequest
+) -> None:
+    """A deleted user should no longer be returned by the lookup endpoint."""
+    create_response = users_client.create_user(create_user_payload)
+    delete_response = users_client.delete_user(create_user_payload.email)
+    get_response = users_client.get_user(create_user_payload.email)
+
+    assert_status_code(create_response, 201)
+    assert_status_code(delete_response, 204)
+    assert_status_code(get_response, 404)
+    assert_error_response(get_response)
