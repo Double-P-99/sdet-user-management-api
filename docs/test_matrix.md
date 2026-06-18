@@ -79,4 +79,3 @@ This matrix maps the OpenAPI specification to the automated scenarios implemente
 - Add tests for response schema drift on successful `POST`, `GET`, `PUT`, and collection `GET` responses beyond the current core field validation.
 - Add auth-header robustness tests, such as whitespace-only tokens, missing header casing variants, and unexpected auth header values on unprotected endpoints.
 - Extend cleanup protections with optional environment-reset hooks if the service ever exposes administrative teardown endpoints.
-- Add workflow-level publishing of JUnit XML into the GitHub Actions test summary for easier inspection directly in CI.
