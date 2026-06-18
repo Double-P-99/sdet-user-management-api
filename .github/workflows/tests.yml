@@ -41,6 +41,11 @@ jobs:
       - name: Run dev tests
         run: pytest -m "not unit" --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
 
+      - name: Summarize dev test results
+        if: always()
+        shell: bash
+        run: python scripts/write_junit_summary.py reports/dev-results.xml "Dev test summary"
+
       - name: Upload dev reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -85,6 +90,11 @@ jobs:
 
       - name: Run prod tests
         run: pytest -m "not unit" --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
+
+      - name: Summarize prod test results
+        if: always()
+        shell: bash
+        run: python scripts/write_junit_summary.py reports/prod-results.xml "Prod test summary"
 
       - name: Upload prod reports
         if: always()
