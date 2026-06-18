@@ -2,7 +2,7 @@
 
 This document records the discrepancies found between the runtime behavior of the API and the contract defined in `sdet_challenge_api.yml`.
 
-All bugs below were confirmed from the automated suite and corroborated with the generated reports on June 17, 2026.
+All bugs below were confirmed from the automated suite and corroborated with the generated reports on June 18, 2026.
 
 ## BUG-001: `POST /users` accepts invalid email format
 

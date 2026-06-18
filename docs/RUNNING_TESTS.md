@@ -20,6 +20,10 @@ The framework reads these variables:
 
 Default local values are documented in `.env.example`.
 
+For local execution, the default `AUTH_TOKEN` is `mysecrettoken`.
+
+For GitHub Actions, prefer configuring a repository secret named `AUTH_TOKEN`. The workflow falls back to `mysecrettoken` only when the secret is not set, which is acceptable for this challenge container but should not be treated as a general production pattern.
+
 ## WSL or Git Bash Workflow
 
 This is the easiest path if `make` is available in your shell.
@@ -134,6 +138,8 @@ Successful runs generate both HTML and JUnit XML artifacts in `reports/`, such a
 - `reports/prod-results.xml`
 - `reports/contract-results.xml`
 
+In GitHub Actions, each environment job also writes a human-readable test summary into the workflow run using `scripts/write_junit_summary.py`.
+
 ## Report Types
 
 ### HTML Report
@@ -155,6 +161,19 @@ pytest --junitxml=reports/results.xml
 ```
 
 JUnit XML is designed for CI/CD systems. GitHub Actions and other test tooling can parse it directly to display a native summary in the workflow UI without downloading an artifact.
+
+### GitHub Actions Summary
+
+The workflow reads the generated JUnit XML and writes a compact summary into the GitHub Actions job UI. The summary includes:
+
+- passed count
+- failed count
+- error count
+- `xfail` count
+- skipped count
+- short lists of failed, `xfail`, and skipped test cases
+
+This gives reviewers a fast read on the run outcome without downloading the HTML artifact first.
 
 ## Troubleshooting
 

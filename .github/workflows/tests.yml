@@ -10,7 +10,7 @@ jobs:
     env:
       BASE_URL: http://localhost:3000
       TEST_ENV: dev
-      AUTH_TOKEN: mysecrettoken
+      AUTH_TOKEN: ${{ secrets.AUTH_TOKEN || 'mydummysecrettoken' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,7 +60,7 @@ jobs:
     env:
       BASE_URL: http://localhost:3000
       TEST_ENV: prod
-      AUTH_TOKEN: mysecrettoken
+      AUTH_TOKEN: ${{ secrets.AUTH_TOKEN || 'mydummysecrettoken' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
