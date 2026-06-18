@@ -7,6 +7,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 class BaseUserPayload(BaseModel):
     """Shared schema constraints defined by the OpenAPI specification."""
+
     name: str
     email: EmailStr
     age: int = Field(ge=1, le=150)
@@ -30,4 +31,5 @@ class UpdateUserRequest(BaseUserPayload):
 
 class ErrorResponse(BaseModel):
     """Schema for error responses returned by the API."""
+
     error: str

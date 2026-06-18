@@ -183,38 +183,6 @@ The `dev` environment does not validate the authentication token correctly for d
 - Authorization consistency across environments
 - Reliability of protected destructive operations
 
-## BUG-006: Environment isolation between `dev` and `prod` is broken
-
-**Summary**  
-Data created in one environment should remain isolated from the other, but the environments are not behaving independently.
-
-**Specification expectation**
-- Valid environment values are `dev` and `prod`
-- Test design expectation derived from the challenge: user data created in one environment should not be visible from the other environment
-- Expected status in the secondary environment: `404`
-
-**Actual behavior**
-- `dev -> prod`: the secondary environment returns `200`, meaning the user is visible across environments
-- `prod -> dev`: the secondary environment returns `500`, not the expected `404`
-
-**Affected environments**
-- Cross-environment behavior involving both `dev` and `prod`
-
-**Test cases that exposed it**
-- `TC-043`: user created in `dev` should not exist in `prod`
-- `TC-044`: user created in `prod` should not exist in `dev`
-
-**Automated evidence**
-- `tests/api/test_environment_isolation.py::test_users_are_isolated_between_environments`
-- Reflected in:
-  - `reports/dev-results.xml`
-  - `reports/prod-results.xml`
-
-**Scenarios affected**
-- Environment separation
-- Confidence in CI stages running independently
-- Reliability of any environment-specific test data
-
 ## Notes
 
 - The OpenAPI file was treated as the authoritative source for expected status codes, schemas, required authentication behavior, and environment usage.

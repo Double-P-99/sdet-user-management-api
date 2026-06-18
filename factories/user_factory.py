@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 from uuid import uuid4
-
 from models.user import CreateUserRequest, UpdateUserRequest
 
 
