@@ -55,7 +55,7 @@ down:
 restart: down up
 
 logs:
-	$(DOCKER) logs $(CONTAINER_NAME)
+	$(DOCKER) logs -f $(CONTAINER_NAME)
 
 test:
 	BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m "not unit" --html=reports/report.html --self-contained-html --junitxml=reports/results.xml
