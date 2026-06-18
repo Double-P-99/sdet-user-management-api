@@ -16,6 +16,7 @@ pytestmark = [pytest.mark.api, pytest.mark.regression]
 
 
 @pytest.mark.smoke
+@pytest.mark.e2e_id("E2E-001")
 @pytest.mark.tc_id("TC-001", "TC-002")
 def test_list_users_returns_200_and_json_array(users_client: UsersClient) -> None:
     """TC-001/TC-002: list users and validate the collection response shape."""
@@ -27,6 +28,7 @@ def test_list_users_returns_200_and_json_array(users_client: UsersClient) -> Non
     assert isinstance(body, list), f"Expected list body, got {type(body).__name__}"
 
 
+@pytest.mark.e2e_id("E2E-003")
 @pytest.mark.tc_id("TC-003", "TC-004", "TC-005", "TC-006")
 def test_list_users_includes_created_user(
     users_client: UsersClient, create_user_payload: CreateUserRequest

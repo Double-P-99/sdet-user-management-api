@@ -29,6 +29,8 @@ This matrix maps the OpenAPI specification to the automated scenarios implemente
 | TC-023 | `/users/{email}` | `GET` | Fetch nonexistent user in `prod` | `prod` | High | `404` with `ErrorResponse` | `test_get_user_returns_404_for_unknown_user` |
 | TC-024 | `/users/{email}` | `PUT` | Update existing user in `dev` | `dev` | High | `200` with updated `User` response | `test_update_user_returns_200_and_updated_user` |
 | TC-025 | `/users/{email}` | `PUT` | Update existing user in `prod` | `prod` | High | `200` with updated `User` response | `test_update_user_returns_200_and_updated_user` |
+| TC-057 | `/users/{email}` -> `/users` | `PUT` -> `GET` | Update user without changing email and verify changed fields appear in list in `dev` | `dev` | High | `200`; listed user reflects updated `name` and `age` | `test_update_user_persists_field_changes_in_user_list_when_email_is_unchanged` |
+| TC-058 | `/users/{email}` -> `/users` | `PUT` -> `GET` | Update user without changing email and verify changed fields appear in list in `prod` | `prod` | High | `200`; listed user reflects updated `name` and `age` | `test_update_user_persists_field_changes_in_user_list_when_email_is_unchanged` |
 | TC-026 | `/users/{email}` | `PUT` | Missing `name` during update | `dev`, `prod` | High | `400` with `ErrorResponse` | `test_update_user_returns_400_for_missing_required_fields[name]` |
 | TC-027 | `/users/{email}` | `PUT` | Missing `email` during update | `dev`, `prod` | High | `400` with `ErrorResponse` | `test_update_user_returns_400_for_missing_required_fields[email]` |
 | TC-028 | `/users/{email}` | `PUT` | Missing `age` during update | `dev`, `prod` | High | `400` with `ErrorResponse` | `test_update_user_returns_400_for_missing_required_fields[age]` |

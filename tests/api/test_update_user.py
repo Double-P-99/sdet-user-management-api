@@ -15,6 +15,7 @@ from validators.api_validators import (
 )
 
 pytestmark = [pytest.mark.api, pytest.mark.regression]
+BUG_REPORT_REF = "documented in docs/bug_report.md"
 
 
 @pytest.mark.smoke
@@ -34,6 +35,68 @@ def test_update_user_returns_200_and_updated_user(
     body = update_response.json()
     assert_user_shape(body)
     assert body == update_user_payload.to_dict()
+
+
+@pytest.mark.xfail(
+    reason=f"Known bug BUG-006: successful update responses do not persist user changes reliably; {BUG_REPORT_REF}",
+    strict=False,
+)
+@pytest.mark.e2e_id("E2E-004")
+@pytest.mark.tc_id("TC-024")
+def test_update_user_persists_changes_for_followup_get(
+    users_client: UsersClient,
+    create_user_payload: CreateUserRequest,
+    update_user_payload: UpdateUserRequest,
+) -> None:
+    """Ensure a successful update is visible in a subsequent fetch."""
+    create_response = users_client.create_user(create_user_payload)
+    update_response = users_client.update_user(create_user_payload.email, update_user_payload)
+    get_response = users_client.get_user(update_user_payload.email)
+
+    assert_status_code(create_response, 201)
+    assert_status_code(update_response, 200)
+    assert_status_code(get_response, 200)
+    assert_json_content_type(get_response)
+    body = get_response.json()
+    assert_user_shape(body)
+    assert body == update_user_payload.to_dict()
+
+
+@pytest.mark.xfail(
+    reason=f"Known bug BUG-006: successful update responses do not persist user changes reliably; {BUG_REPORT_REF}",
+    strict=False,
+)
+@pytest.mark.e2e_id("E2E-005")
+@pytest.mark.tc_id("TC-057", "TC-058")
+def test_update_user_persists_field_changes_in_user_list_when_email_is_unchanged(
+    users_client: UsersClient,
+    create_user_payload: CreateUserRequest,
+) -> None:
+    """Ensure list results reflect updated fields when the email stays the same."""
+    update_user_payload = UserFactory.build_update_user(
+        overrides=UserOverrides(
+            email=create_user_payload.email,
+            name=f"{create_user_payload.name} Updated",
+            age=create_user_payload.age + 1,
+        )
+    )
+
+    create_response = users_client.create_user(create_user_payload)
+    update_response = users_client.update_user(create_user_payload.email, update_user_payload)
+    list_response = users_client.list_users()
+
+    assert_status_code(create_response, 201)
+    assert_status_code(update_response, 200)
+    assert_status_code(list_response, 200)
+    assert_json_content_type(list_response)
+    users = list_response.json()
+    matching_users = [user for user in users if user.get("email") == create_user_payload.email]
+
+    assert len(matching_users) == 1, (
+        f"Expected one user with email {create_user_payload.email}, got {len(matching_users)}"
+    )
+    assert_user_shape(matching_users[0])
+    assert matching_users[0] == update_user_payload.to_dict()
 
 
 @pytest.mark.tc_id("TC-026", "TC-027", "TC-028")
@@ -88,6 +151,23 @@ def test_update_user_returns_404_for_unknown_user(
 
     assert_status_code(response, 404)
     assert_error_response(response)
+
+
+@pytest.mark.e2e_id("E2E-007")
+def test_update_user_returns_404_after_user_was_deleted(
+    users_client: UsersClient,
+    create_user_payload: CreateUserRequest,
+    update_user_payload: UpdateUserRequest,
+) -> None:
+    """A deleted user should no longer accept update operations."""
+    create_response = users_client.create_user(create_user_payload)
+    delete_response = users_client.delete_user(create_user_payload.email)
+    update_response = users_client.update_user(create_user_payload.email, update_user_payload)
+
+    assert_status_code(create_response, 201)
+    assert_status_code(delete_response, 204)
+    assert_status_code(update_response, 404)
+    assert_error_response(update_response)
 
 
 @pytest.mark.tc_id("TC-033", "TC-034")

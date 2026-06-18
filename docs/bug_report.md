@@ -183,6 +183,45 @@ The `dev` environment does not validate the authentication token correctly for d
 - Authorization consistency across environments
 - Reliability of protected destructive operations
 
+## BUG-006: `PUT /users/{email}` returns `200` but does not persist updates reliably
+
+**Summary**  
+The API reports successful user updates with `200 OK`, but the changes are not reliably persisted. This affects both primary-key updates (`email`) and non-key field updates (`name`, `age`).
+
+**Specification expectation**
+- Endpoint: `PUT /{env}/users/{email}`
+- Expected status: `200`
+- Expected behavior: subsequent reads should reflect the updated user state
+
+**Actual behavior**
+- The update request returns `200 OK`
+- The update response body echoes the submitted values
+- Follow-up reads do not consistently reflect the update:
+  - When the `email` is changed, `GET /users/{new_email}` returns `500 Internal Server Error`
+  - When the `email` stays the same, `GET /users` still returns the old `name` and `age`
+
+**Affected environments**
+- Confirmed in `dev`
+- `prod` should be verified with the same scenarios
+
+**Test cases that exposed it**
+- Extended coverage under `TC-024`: successful update should persist for follow-up retrieval by updated email
+- `TC-057`: unchanged-email update should persist in list results in `dev`
+- `TC-058`: unchanged-email update should persist in list results in `prod`
+
+**Automated evidence**
+- `tests/api/test_update_user.py::test_update_user_persists_changes_for_followup_get`
+- `tests/api/test_update_user.py::test_update_user_persists_field_changes_in_user_list_when_email_is_unchanged`
+- Reflected in:
+  - `reports/dev-results.xml`
+  - `reports/dev-report.html`
+
+**Scenarios affected**
+- Resource persistence after update
+- Primary-key change behavior when `email` is updated
+- Read-after-write consistency for `PUT`
+- Collection correctness after updating non-key user fields
+
 ## Notes
 
 - The OpenAPI file was treated as the authoritative source for expected status codes, schemas, required authentication behavior, and environment usage.

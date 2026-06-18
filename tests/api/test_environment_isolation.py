@@ -12,6 +12,7 @@ pytestmark = [pytest.mark.api, pytest.mark.regression, pytest.mark.isolation]
 BUG_REPORT_REF = "documented in docs/bug_report.md"
 
 
+@pytest.mark.e2e_id("E2E-008")
 @pytest.mark.tc_id("TC-043", "TC-044")
 @pytest.mark.xfail(
     reason=f"Known bug BUG-003: missing user lookup returns 500 instead of 404; {BUG_REPORT_REF}",

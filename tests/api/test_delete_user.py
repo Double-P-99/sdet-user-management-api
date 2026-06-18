@@ -18,6 +18,7 @@ IS_DEV = os.getenv("TEST_ENV", "dev") == "dev"
 
 @pytest.mark.smoke
 @pytest.mark.security
+@pytest.mark.e2e_id("E2E-006")
 @pytest.mark.tc_id("TC-035", "TC-036")
 def test_delete_user_returns_204_for_existing_user(
     users_client: UsersClient, create_user_payload: CreateUserRequest

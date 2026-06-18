@@ -109,5 +109,7 @@ class UsersClient(BaseClient):
         new_email: str,
     ) -> None:
         if response.status_code == 200:
-            self._tracked_user_emails.discard(old_email)
+            # Keep both candidates so cleanup still works when the API returns
+            # 200 but leaves the record addressable under the original email.
+            self._tracked_user_emails.add(old_email)
             self._tracked_user_emails.add(new_email)

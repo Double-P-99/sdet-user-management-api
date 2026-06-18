@@ -68,7 +68,7 @@ def test_create_user_does_not_track_failed_creation() -> None:
     assert client.tracked_user_emails() == ()
 
 
-def test_update_user_replaces_tracked_email_after_success() -> None:
+def test_update_user_keeps_old_and_new_email_tracked_after_success() -> None:
     session = Mock()
     session.request.side_effect = [_response(201), _response(200)]
     client = UsersClient(_settings(), session=session)
@@ -82,7 +82,10 @@ def test_update_user_replaces_tracked_email_after_success() -> None:
     client.create_user(create_payload)
     client.update_user(create_payload.email, update_payload)
 
-    assert client.tracked_user_emails() == ("jane.updated@example.com",)
+    assert set(client.tracked_user_emails()) == {
+        "jane@example.com",
+        "jane.updated@example.com",
+    }
 
 
 def test_delete_user_removes_email_from_tracking_after_success() -> None:

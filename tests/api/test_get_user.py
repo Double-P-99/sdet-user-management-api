@@ -19,6 +19,7 @@ BUG_REPORT_REF = "documented in docs/bug_report.md"
 
 
 @pytest.mark.smoke
+@pytest.mark.e2e_id("E2E-002")
 @pytest.mark.tc_id("TC-020", "TC-021")
 def test_get_user_returns_200_for_existing_user(
     users_client: UsersClient, create_user_payload: CreateUserRequest

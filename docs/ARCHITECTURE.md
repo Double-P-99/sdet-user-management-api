@@ -24,7 +24,7 @@ validators/         Reusable assertions and schema validators
 tests/api/          Endpoint behavior tests
 tests/contract/     Contract-focused error response tests
 tests/unit/         Framework unit tests
-docs/               Architecture, execution, matrix, and bug documentation
+docs/               Architecture, execution, matrices, and bug documentation
 reports/            Generated HTML and JUnit XML reports
 ```
 
@@ -201,6 +201,8 @@ The main markers are:
 - `tc_id`
 
 `tc_id` markers map automated tests back to `docs/test_matrix.md`. This provides traceability between the OpenAPI requirements, the documented matrix, and the executable tests.
+
+`docs/e2e_basic_matrix.md` serves a different purpose: it summarizes the smallest set of workflow-style E2E scenarios that are especially good at surfacing real product bugs such as failed persistence after successful writes.
 
 ## Known Bugs And `xfail`
 
