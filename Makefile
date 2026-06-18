@@ -13,6 +13,7 @@ CONTAINER_NAME ?= sdet-user-api
 BASE_URL ?= http://localhost:3000
 AUTH_TOKEN ?= mysecrettoken
 REQUEST_TIMEOUT ?= 10
+REQUEST_RETRIES ?= 2
 
 .PHONY: help setup install env up down restart logs test test-dev test-prod test-contract test-unit
 
@@ -58,16 +59,16 @@ logs:
 	$(DOCKER) logs -f $(CONTAINER_NAME)
 
 test:
-	BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m "not unit" --html=reports/report.html --self-contained-html --junitxml=reports/results.xml
+	BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) REQUEST_RETRIES=$(REQUEST_RETRIES) $(PYTEST) -m "not unit" --html=reports/report.html --self-contained-html --junitxml=reports/results.xml
 
 test-dev:
-	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m "not unit" --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
+	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) REQUEST_RETRIES=$(REQUEST_RETRIES) $(PYTEST) -m "not unit" --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
 
 test-prod:
-	TEST_ENV=prod BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m "not unit" --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
+	TEST_ENV=prod BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) REQUEST_RETRIES=$(REQUEST_RETRIES) $(PYTEST) -m "not unit" --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
 
 test-contract:
-	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m contract --html=reports/contract-report.html --self-contained-html --junitxml=reports/contract-results.xml
+	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) REQUEST_RETRIES=$(REQUEST_RETRIES) $(PYTEST) -m contract --html=reports/contract-report.html --self-contained-html --junitxml=reports/contract-results.xml
 
 test-unit:
-	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) $(PYTEST) -m unit
+	TEST_ENV=dev BASE_URL=$(BASE_URL) AUTH_TOKEN=$(AUTH_TOKEN) REQUEST_TIMEOUT=$(REQUEST_TIMEOUT) REQUEST_RETRIES=$(REQUEST_RETRIES) $(PYTEST) -m unit
