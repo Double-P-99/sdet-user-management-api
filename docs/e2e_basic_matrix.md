@@ -20,7 +20,7 @@ The goal here is not to restate every contract permutation, but to protect the m
 
 ## Why This Matrix Exists
 
-- The full matrix in `docs/test_matrix.md` gives complete traceability to the OpenAPI contract.
+- The full contract matrix in `docs/test_matrix.md` gives complete traceability to the OpenAPI specification.
 - This basic E2E matrix highlights the smallest set of workflows that should keep catching real application bugs even if individual endpoint tests still pass.
 - Bugs like failed `PUT` persistence are easier to surface in workflow tests than in isolated request/response checks.
 

@@ -23,6 +23,14 @@ API E2E and contract test framework for the SDET take-home challenge.
 - `docs/`: architecture, execution, and bug documentation
 - `reports/`: generated test reports
 
+## Documentation
+
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Full Contract Test Matrix](./docs/test_matrix.md)
+- [Basic E2E Matrix](./docs/e2e_basic_matrix.md)
+- [Bug Report](./docs/bug_report.md)
+- [Running Tests](./docs/RUNNING_TESTS.md)
+
 ## Configuration
 
 The framework reads these environment variables:
@@ -114,4 +122,5 @@ Use the HTML files for detailed human-readable debugging. Use the JUnit XML file
 - The Makefile is most convenient in WSL, Git Bash, or any Unix-like shell with `make`.
 - PowerShell users can run the same workflow manually with `.venv\Scripts\python.exe`.
 - Docker must be running before executing the tests locally.
-- Additional execution details are documented in [RUNNING_TESTS.md](./docs/RUNNING_TESTS.md).
+- Additional execution details are documented in [Running Tests](./docs/RUNNING_TESTS.md).
+- The project includes both a full contract traceability matrix and a smaller workflow-focused E2E matrix so specification coverage and real user flows stay visible separately.
