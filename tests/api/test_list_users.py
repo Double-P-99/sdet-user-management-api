@@ -11,7 +11,7 @@ from validators.api_validators import (
     assert_status_code,
     assert_user_list_contains_exactly_once,
     assert_user_list_shape,
-    assert_user_shape,
+    assert_user_payload,
 )
 
 pytestmark = [pytest.mark.api, pytest.mark.regression]
@@ -26,8 +26,7 @@ def test_list_users_returns_200_and_json_array(users_client: UsersClient) -> Non
 
     assert_status_code(response, 200)
     assert_json_content_type(response)
-    body = response.json()
-    assert isinstance(body, list), f"Expected list body, got {type(body).__name__}"
+    assert_user_list_shape(response.json())
 
 
 @pytest.mark.e2e_id("E2E-003")
@@ -41,8 +40,10 @@ def test_list_users_includes_created_user(
 
     assert_status_code(create_response, 201)
     assert_status_code(list_response, 200)
-    users = assert_user_list_shape(list_response.json())
-    assert any(user.get("email") == create_user_payload.email for user in users)
+    assert_user_list_contains_exactly_once(
+        list_response.json(),
+        create_user_payload.to_dict(),
+    )
 
 
 @pytest.mark.e2e_id("E2E-010")
@@ -60,8 +61,10 @@ def test_get_user_and_list_user_entry_match_after_create(
     assert_json_content_type(get_response)
     assert_json_content_type(list_response)
 
-    get_body = get_response.json()
-    assert_user_shape(get_body)
+    get_body = assert_user_payload(
+        get_response.json(),
+        create_user_payload.to_dict(),
+    )
     listed_user = assert_user_list_contains_exactly_once(
         list_response.json(),
         create_user_payload.to_dict(),

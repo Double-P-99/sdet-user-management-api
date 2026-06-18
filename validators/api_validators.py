@@ -30,6 +30,13 @@ def assert_user_shape(payload: dict[str, Any]) -> None:
     User.model_validate(payload)
 
 
+def assert_user_payload(payload: Any, expected_user: dict[str, Any]) -> dict[str, Any]:
+    """Assert a payload matches the documented User contract and expected values."""
+    assert_user_shape(payload)
+    assert payload == expected_user
+    return payload
+
+
 def assert_user_list_shape(payload: Any) -> list[dict[str, Any]]:
     """Assert a response body is a list of User objects."""
     assert isinstance(payload, list), f"Expected list body, got {type(payload).__name__}"

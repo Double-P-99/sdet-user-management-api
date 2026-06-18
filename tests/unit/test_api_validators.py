@@ -12,6 +12,7 @@ from validators.api_validators import (
     assert_status_code,
     assert_user_list_contains_exactly_once,
     assert_user_list_shape,
+    assert_user_payload,
 )
 
 
@@ -54,6 +55,14 @@ def test_assert_user_list_shape_accepts_valid_user_list() -> None:
     result = assert_user_list_shape(payload)
 
     assert result == payload
+
+
+def test_assert_user_payload_accepts_expected_user() -> None:
+    expected_user = {"name": "Jane Doe", "email": "jane@example.com", "age": 30}
+
+    result = assert_user_payload(expected_user, expected_user)
+
+    assert result == expected_user
 
 
 def test_assert_user_list_contains_exactly_once_returns_matching_user() -> None:
