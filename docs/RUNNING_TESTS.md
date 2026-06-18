@@ -17,7 +17,6 @@ The framework reads these variables:
 - `AUTH_TOKEN`
 - `REQUEST_TIMEOUT`
 - `REQUEST_RETRIES`
-- `PYTEST_WORKERS`
 
 Default local values are documented in `.env.example`.
 
@@ -53,15 +52,6 @@ make test-dev
 make test-prod
 make test-contract
 ```
-
-The suite runs sequentially by default. To enable optional pytest-xdist parallel execution:
-
-```bash
-PYTEST_WORKERS=2 make test-dev
-PYTEST_WORKERS=auto make test-prod
-```
-
-When enabled, the Makefile passes `-n <workers> --dist=loadscope` to pytest.
 
 Runs the corresponding test suites and writes HTML reports into `reports/`.
 
@@ -173,4 +163,3 @@ JUnit XML is designed for CI/CD systems. GitHub Actions and other test tooling c
 - If `make` is not recognized in Windows, use the PowerShell workflow instead of the Makefile.
 - If dependencies are missing, rerun the virtual environment installation step before running tests.
 - `REQUEST_RETRIES` controls conservative client-level retries for transient `GET` failures with HTTP `502`, `503`, or `504`. Full test reruns are intentionally not enabled by default because they can hide real API contract bugs.
-- `PYTEST_WORKERS` controls optional parallel execution. Keep it at `0` for deterministic local debugging; use a number or `auto` when the suite grows enough for parallelism to help.

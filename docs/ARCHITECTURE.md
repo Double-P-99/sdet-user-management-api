@@ -39,7 +39,6 @@ The framework reads:
 - `AUTH_TOKEN`
 - `REQUEST_TIMEOUT`
 - `REQUEST_RETRIES`
-- `PYTEST_WORKERS`
 
 `TEST_ENV` is validated against the only environments documented by the API spec:
 
@@ -231,23 +230,32 @@ Mutating operations such as `POST`, `PUT`, and `DELETE` are not retried automati
 
 Full pytest test reruns are intentionally not enabled by default. A rerun plugin can be useful in some large suites, but for this challenge it could mask real contract bugs, so known product defects are handled with explicit `xfail` instead.
 
-## Parallel Execution
+## Parallel Execution Strategy
 
-Parallel execution is available through `pytest-xdist`, but it is opt-in.
+The suite is intentionally configured for sequential execution today.
 
-The Makefile reads `PYTEST_WORKERS`:
+That is the right tradeoff for the current size of the project because:
 
-- `PYTEST_WORKERS=0`: sequential execution
-- `PYTEST_WORKERS=2`: two pytest workers
-- `PYTEST_WORKERS=auto`: pytest chooses workers from available CPU cores
+- the suite is still small enough that worker startup cost may outweigh the gain
+- sequential execution is easier to debug during local reproduction and live interview discussion
+- the main reliability risks so far have come from shared application state, not raw test runtime
 
-When workers are enabled, pytest runs with:
+The framework is already structured in a way that makes future parallelization realistic:
 
-```bash
--n <workers> --dist=loadscope
-```
+- generated emails are unique
+- tests clean up their own created data
+- unit tests are separated from E2E tests
+- `dev` and `prod` already run in parallel at the workflow-job level
 
-The suite is designed to be parallel-friendly because generated emails are unique and tests clean up their own data. Sequential execution remains the default because the current suite is small and easier to debug that way.
+When the suite grows enough that parallel pytest workers become worthwhile, the scaling plan is:
+
+1. Add `pytest-xdist` back to `requirements.txt`.
+2. Add a worker control variable such as `PYTEST_WORKERS` to `.env.example`.
+3. Update the Makefile to pass `-n <workers> --dist=loadscope` to pytest when that variable is set.
+4. Set the worker count explicitly in `.github/workflows/tests.yml` after validating the suite remains stable in CI.
+5. Benchmark sequential vs parallel execution before keeping the change permanently.
+
+Until that point, sequential execution keeps the framework simpler and failures easier to interpret.
 
 ## Local Execution
 

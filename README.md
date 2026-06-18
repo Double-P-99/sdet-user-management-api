@@ -32,7 +32,6 @@ The framework reads these environment variables:
 - `AUTH_TOKEN`
 - `REQUEST_TIMEOUT`
 - `REQUEST_RETRIES`
-- `PYTEST_WORKERS`
 
 See [`.env.example`](./.env.example) for the default local values.
 
@@ -79,12 +78,6 @@ Examples:
 make test-dev
 make test-prod
 make test-contract
-```
-
-Parallel execution is opt-in. By default `PYTEST_WORKERS=0`, which keeps the suite sequential. To run with two workers:
-
-```bash
-PYTEST_WORKERS=2 make test-dev
 ```
 
 ```powershell
