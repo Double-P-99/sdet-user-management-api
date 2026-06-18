@@ -11,6 +11,7 @@ jobs:
       BASE_URL: http://localhost:3000
       TEST_ENV: dev
       AUTH_TOKEN: mysecrettoken
+      PYTEST_WORKERS: 2
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,7 +40,7 @@ jobs:
           exit 1
 
       - name: Run dev tests
-        run: pytest -m "not unit" --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
+        run: make test-dev
 
       - name: Upload dev reports
         if: always()
@@ -56,6 +57,7 @@ jobs:
       BASE_URL: http://localhost:3000
       TEST_ENV: prod
       AUTH_TOKEN: mysecrettoken
+      PYTEST_WORKERS: 2
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,7 +86,7 @@ jobs:
           exit 1
 
       - name: Run prod tests
-        run: pytest -m "not unit" --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
+        run: make test-prod
 
       - name: Upload prod reports
         if: always()
