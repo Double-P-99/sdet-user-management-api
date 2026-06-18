@@ -9,6 +9,8 @@ from models.user import CreateUserRequest
 from validators.api_validators import (
     assert_json_content_type,
     assert_status_code,
+    assert_user_list_contains_exactly_once,
+    assert_user_list_shape,
     assert_user_shape,
 )
 
@@ -39,11 +41,8 @@ def test_list_users_includes_created_user(
 
     assert_status_code(create_response, 201)
     assert_status_code(list_response, 200)
-    users = list_response.json()
-    assert isinstance(users, list)
+    users = assert_user_list_shape(list_response.json())
     assert any(user.get("email") == create_user_payload.email for user in users)
-    for user in users:
-        assert_user_shape(user)
 
 
 @pytest.mark.e2e_id("E2E-010")
@@ -62,12 +61,9 @@ def test_get_user_and_list_user_entry_match_after_create(
     assert_json_content_type(list_response)
 
     get_body = get_response.json()
-    users = list_response.json()
-    matching_users = [user for user in users if user.get("email") == create_user_payload.email]
-
-    assert len(matching_users) == 1, (
-        f"Expected one user with email {create_user_payload.email}, got {len(matching_users)}"
-    )
     assert_user_shape(get_body)
-    assert_user_shape(matching_users[0])
-    assert get_body == matching_users[0] == create_user_payload.to_dict()
+    listed_user = assert_user_list_contains_exactly_once(
+        list_response.json(),
+        create_user_payload.to_dict(),
+    )
+    assert get_body == listed_user == create_user_payload.to_dict()

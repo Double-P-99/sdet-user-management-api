@@ -11,6 +11,7 @@ from validators.api_validators import (
     assert_error_response,
     assert_json_content_type,
     assert_status_code,
+    assert_user_list_contains_exactly_once,
     assert_user_shape,
 )
 
@@ -89,14 +90,10 @@ def test_update_user_persists_field_changes_in_user_list_when_email_is_unchanged
     assert_status_code(update_response, 200)
     assert_status_code(list_response, 200)
     assert_json_content_type(list_response)
-    users = list_response.json()
-    matching_users = [user for user in users if user.get("email") == create_user_payload.email]
-
-    assert len(matching_users) == 1, (
-        f"Expected one user with email {create_user_payload.email}, got {len(matching_users)}"
+    assert_user_list_contains_exactly_once(
+        list_response.json(),
+        update_user_payload.to_dict(),
     )
-    assert_user_shape(matching_users[0])
-    assert matching_users[0] == update_user_payload.to_dict()
 
 
 @pytest.mark.tc_id("TC-026", "TC-027", "TC-028")

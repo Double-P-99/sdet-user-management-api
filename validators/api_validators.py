@@ -30,6 +30,29 @@ def assert_user_shape(payload: dict[str, Any]) -> None:
     User.model_validate(payload)
 
 
+def assert_user_list_shape(payload: Any) -> list[dict[str, Any]]:
+    """Assert a response body is a list of User objects."""
+    assert isinstance(payload, list), f"Expected list body, got {type(payload).__name__}"
+    for user in payload:
+        assert_user_shape(user)
+    return payload
+
+
+def assert_user_list_contains_exactly_once(
+    payload: Any, expected_user: dict[str, Any]
+) -> dict[str, Any]:
+    """Assert a user appears exactly once in a user list and matches the expected payload."""
+    users = assert_user_list_shape(payload)
+    expected_email = expected_user.get("email")
+    matching_users = [user for user in users if user.get("email") == expected_email]
+
+    assert len(matching_users) == 1, (
+        f"Expected one user with email {expected_email}, got {len(matching_users)}"
+    )
+    assert matching_users[0] == expected_user
+    return matching_users[0]
+
+
 def assert_error_response(response: Response) -> ErrorResponse:
     """Assert the response follows the documented ErrorResponse schema."""
     assert_json_content_type(response)

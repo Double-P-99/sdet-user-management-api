@@ -10,6 +10,8 @@ from validators.api_validators import (
     assert_error_response,
     assert_json_content_type,
     assert_status_code,
+    assert_user_list_contains_exactly_once,
+    assert_user_list_shape,
 )
 
 
@@ -44,3 +46,28 @@ def test_assert_error_response_validates_error_schema() -> None:
     result = assert_error_response(response)
 
     assert result.error == "User not found"
+
+
+def test_assert_user_list_shape_accepts_valid_user_list() -> None:
+    payload = [{"name": "Jane Doe", "email": "jane@example.com", "age": 30}]
+
+    result = assert_user_list_shape(payload)
+
+    assert result == payload
+
+
+def test_assert_user_list_contains_exactly_once_returns_matching_user() -> None:
+    expected_user = {"name": "Jane Doe", "email": "jane@example.com", "age": 30}
+    payload = [expected_user]
+
+    result = assert_user_list_contains_exactly_once(payload, expected_user)
+
+    assert result == expected_user
+
+
+def test_assert_user_list_contains_exactly_once_raises_for_missing_match() -> None:
+    payload = [{"name": "Jane Doe", "email": "jane@example.com", "age": 30}]
+    expected_user = {"name": "John Doe", "email": "john@example.com", "age": 31}
+
+    with pytest.raises(AssertionError, match="Expected one user with email john@example.com, got 0"):
+        assert_user_list_contains_exactly_once(payload, expected_user)
