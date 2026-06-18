@@ -225,5 +225,4 @@ The API reports successful user updates with `200 OK`, but the changes are not r
 ## Notes
 
 - The OpenAPI file was treated as the authoritative source for expected status codes, schemas, required authentication behavior, and environment usage.
-- I intentionally did not report "extra fields accepted" as a bug because the schema does not explicitly define `additionalProperties: false`.
 - During earlier runs, `GET /users` exposed invalid persisted records and looked like a separate response-schema bug. After adding unique test data and automatic cleanup, that behavior is no longer treated as a confirmed application bug and is considered historical test-environment contamination instead.

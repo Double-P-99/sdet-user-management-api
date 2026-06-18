@@ -68,9 +68,3 @@ class UserFactory:
         payload = UserFactory.build_create_user().to_dict()
         payload["age"] = age
         return payload
-
-    @staticmethod
-    def extra_field_payload() -> dict[str, Any]:
-        payload = UserFactory.build_create_user().to_dict()
-        payload["unexpected"] = "value"
-        return payload
