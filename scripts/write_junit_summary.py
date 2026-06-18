@@ -55,10 +55,20 @@ def main() -> int:
 
         failing_cases: list[str] = []
         skipped_cases: list[str] = []
+        xfailed_cases: list[str] = []
         for case in root.iter("testcase"):
             if case.find("failure") is not None or case.find("error") is not None:
                 failing_cases.append(_case_name(case))
-            elif case.find("skipped") is not None:
+                continue
+
+            skipped = case.find("skipped")
+            if skipped is None:
+                continue
+
+            skipped_type = (skipped.attrib.get("type") or "").strip().lower()
+            if skipped_type == "pytest.xfail":
+                xfailed_cases.append(_case_name(case))
+            else:
                 skipped_cases.append(_case_name(case))
 
         summary.write("| Passed | Failed | Errors | Skipped |\n")
@@ -71,8 +81,14 @@ def main() -> int:
                 summary.write(f"- `{case_name}`\n")
             summary.write("\n")
 
+        if xfailed_cases:
+            summary.write("### Xfailed cases\n\n")
+            for case_name in xfailed_cases[:10]:
+                summary.write(f"- `{case_name}`\n")
+            summary.write("\n")
+
         if skipped_cases:
-            summary.write("### Skipped or xfailed cases\n\n")
+            summary.write("### Skipped cases\n\n")
             for case_name in skipped_cases[:10]:
                 summary.write(f"- `{case_name}`\n")
             summary.write("\n")
