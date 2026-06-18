@@ -38,6 +38,8 @@ The framework reads:
 - `TEST_ENV`
 - `AUTH_TOKEN`
 - `REQUEST_TIMEOUT`
+- `REQUEST_RETRIES`
+- `PYTEST_WORKERS`
 
 `TEST_ENV` is validated against the only environments documented by the API spec:
 
@@ -56,6 +58,7 @@ This allows the same test code to run against either environment without branchi
 - builds URLs with the environment prefix
 - exposes `get`, `post`, `put`, and `delete`
 - delegates requests through `requests.Session`
+- retries transient `GET` failures on `502`, `503`, and `504`
 
 Example URL construction:
 
@@ -213,6 +216,38 @@ The goal is to:
 - document why the failure is expected today
 
 Only confirmed product mismatches are marked as `xfail`. Framework problems or test data issues are fixed in the framework rather than marked as expected failures.
+
+## Reliability Strategy
+
+The framework uses conservative network-level retries in `BaseClient`.
+
+Retries apply only to `GET` requests and only for transient infrastructure-style responses:
+
+- `502`
+- `503`
+- `504`
+
+Mutating operations such as `POST`, `PUT`, and `DELETE` are not retried automatically. This avoids accidentally hiding product behavior or repeating state-changing requests.
+
+Full pytest test reruns are intentionally not enabled by default. A rerun plugin can be useful in some large suites, but for this challenge it could mask real contract bugs, so known product defects are handled with explicit `xfail` instead.
+
+## Parallel Execution
+
+Parallel execution is available through `pytest-xdist`, but it is opt-in.
+
+The Makefile reads `PYTEST_WORKERS`:
+
+- `PYTEST_WORKERS=0`: sequential execution
+- `PYTEST_WORKERS=2`: two pytest workers
+- `PYTEST_WORKERS=auto`: pytest chooses workers from available CPU cores
+
+When workers are enabled, pytest runs with:
+
+```bash
+-n <workers> --dist=loadscope
+```
+
+The suite is designed to be parallel-friendly because generated emails are unique and tests clean up their own data. Sequential execution remains the default because the current suite is small and easier to debug that way.
 
 ## Local Execution
 

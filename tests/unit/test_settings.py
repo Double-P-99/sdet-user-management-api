@@ -15,6 +15,7 @@ def test_from_env_uses_documented_defaults(monkeypatch: pytest.MonkeyPatch) -> N
     monkeypatch.delenv("TEST_ENV", raising=False)
     monkeypatch.delenv("AUTH_TOKEN", raising=False)
     monkeypatch.delenv("REQUEST_TIMEOUT", raising=False)
+    monkeypatch.delenv("REQUEST_RETRIES", raising=False)
 
     settings = Settings.from_env()
 
@@ -22,6 +23,7 @@ def test_from_env_uses_documented_defaults(monkeypatch: pytest.MonkeyPatch) -> N
     assert settings.environment == "dev"
     assert settings.auth_token == "mysecrettoken"
     assert settings.timeout == 10.0
+    assert settings.request_retries == 2
 
 
 def test_from_env_normalizes_environment(monkeypatch: pytest.MonkeyPatch) -> None:

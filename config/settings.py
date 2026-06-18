@@ -17,6 +17,7 @@ class Settings:
     environment: str
     auth_token: str
     timeout: float = 10.0
+    request_retries: int = 2
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -32,6 +33,7 @@ class Settings:
             environment=environment,
             auth_token=os.getenv("AUTH_TOKEN", "mysecrettoken"),
             timeout=float(os.getenv("REQUEST_TIMEOUT", "10")),
+            request_retries=int(os.getenv("REQUEST_RETRIES", "2")),
         )
 
 

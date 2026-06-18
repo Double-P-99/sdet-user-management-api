@@ -47,3 +47,20 @@ def test_post_delegates_to_session_request() -> None:
         params=None,
         timeout=7.5,
     )
+
+
+def test_default_session_retries_transient_get_failures_only() -> None:
+    settings = Settings(
+        base_url="http://localhost:3000",
+        environment="dev",
+        auth_token="mysecrettoken",
+        timeout=7.5,
+        request_retries=3,
+    )
+
+    client = BaseClient(settings)
+    retries = client.session.adapters["http://"].max_retries
+
+    assert retries.total == 3
+    assert retries.status_forcelist == (502, 503, 504)
+    assert retries.allowed_methods == {"GET"}
