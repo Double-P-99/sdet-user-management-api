@@ -122,8 +122,8 @@ python -m venv .venv
 cp -n .env.example .env
 docker rm -f sdet-user-api || true
 docker run -d --name sdet-user-api -p 3000:3000 ghcr.io/danielsilva-loanpro/sdet-interview-challenge:latest
-TEST_ENV=dev .venv/bin/python -m pytest --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
-TEST_ENV=prod .venv/bin/python -m pytest --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
+TEST_ENV=dev .venv/bin/python -m pytest -m "not unit" --html=reports/dev-report.html --self-contained-html --junitxml=reports/dev-results.xml
+TEST_ENV=prod .venv/bin/python -m pytest -m "not unit" --html=reports/prod-report.html --self-contained-html --junitxml=reports/prod-results.xml
 docker rm -f sdet-user-api
 ```
 
