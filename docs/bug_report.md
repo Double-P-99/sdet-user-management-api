@@ -201,8 +201,7 @@ The API reports successful user updates with `200 OK`, but the changes are not r
   - When the `email` stays the same, `GET /users` still returns the old `name` and `age`
 
 **Affected environments**
-- Confirmed in `dev`
-- `prod` should be verified with the same scenarios
+- Confirmed in `dev` and `prod`
 
 **Test cases that exposed it**
 - Extended coverage under `TC-024`: successful update should persist for follow-up retrieval by updated email
